@@ -17,13 +17,36 @@ var io = socketIO(server); // this is web sockets server, for communicating betw
 
 app.use(express.static(publicPath));
 
-io.on('connection', (socket)=>{ // socket from index.html, register event listener, when client connects to server
-    console.log('new user connected');
+io.on('connection', (socket)=>{
 
-    socket.on('disconnect', ()=>{
-        console.log('user was disconnected')
+    socket.emit('newMessage', {
+        from: 'server',
+        text: 'hello from server',
+        createdAt: 'server local'
+    });
+
+    socket.on('createMessage', (newMessage)=>{
+        console.log('received new message from client ', newMessage);
     })
-})  
+})
+
+// io.on('connection', (socket)=>{ // socket from index.html, register event listener, when client connects to server
+//     console.log('new user connected');
+
+//     socket.emit('newEmail', {  // send data from server to client in real time, not possible w/ HTTP
+//         from: 'kevliao@hm.com',
+//         text: 'test msg',
+//         createAt: 123
+//     });  // newEmail from client side, has to be same
+
+//     socket.on('createEmail', (newEmail)=>{  // from C to S
+//         console.log('createEmail', newEmail)
+//     })
+
+//     socket.on('disconnect', ()=>{
+//         console.log('user was disconnected')
+//     })
+// })  
 
 
 server.listen(port, ()=>{
