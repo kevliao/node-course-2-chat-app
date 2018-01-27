@@ -18,15 +18,27 @@ var io = socketIO(server); // this is web sockets server, for communicating betw
 app.use(express.static(publicPath));
 
 io.on('connection', (socket)=>{
+    console.log('new user connected');
 
-    socket.emit('newMessage', {
-        from: 'server',
-        text: 'hello from server',
-        createdAt: 'server local'
-    });
+    // socket.emit('newMessage', {
+    //     from: 'server',
+    //     text: 'hello from server',
+    //     createdAt: 'server local'
+    // });
 
+    // listen to client
     socket.on('createMessage', (newMessage)=>{
         console.log('received new message from client ', newMessage);
+        // socket.emit emits event to single connection, whiel io.emit emits event to every single connections
+        io.emit('newMessage', {
+            from: newMessage.from,
+            text: newMessage.text,
+            createdAt: new Date().getTime()  // to prevent spoofing
+        });    
+    });
+
+    socket.on('disconnect', ()=>{
+        console.log('user was disconnected')
     })
 })
 

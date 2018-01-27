@@ -3,10 +3,10 @@ var socket = io();  // used to listecn to data from server, and to send info bac
 socket.on('connect', ()=>{
     console.log('connected to server');
 
-    socket.emit('createMessage', {
-        from: 'client app kl',
-        text: 'message from client app kl'
-    });
+    // socket.emit('createMessage', {
+    //     from: 'client app kl',
+    //     text: 'message from client app kl'
+    // });
 })
 // socket.on('connect', ()=>{
 //     console.log('connected to server');
