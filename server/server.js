@@ -1,6 +1,8 @@
 // practice
 const path = require('path');  // built in, does not need install
+const http = require('http');  // built in; used by express to set up http server
 const express = require('express');
+const socketIO = require('socket.io');
 
 const publicPath = path.join(__dirname, '../public');  // this is path for express middleware
 var port = process.env.PORT || 3000;
@@ -10,10 +12,20 @@ var port = process.env.PORT || 3000;
 
 
 var app = express();
-
+var server = http.createServer(app); // app.listen calls createServer as well
+var io = socketIO(server); // this is web sockets server, for communicating between server and client
 
 app.use(express.static(publicPath));
 
-app.listen(port, ()=>{
+io.on('connection', (socket)=>{ // socket from index.html, register event listener, when client connects to server
+    console.log('new user connected');
+
+    socket.on('disconnect', ()=>{
+        console.log('user was disconnected')
+    })
+})  
+
+
+server.listen(port, ()=>{
     console.log(`Server up on ${port}`);
 })
