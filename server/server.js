@@ -9,7 +9,7 @@ var port = process.env.PORT || 3000;
 
 // console.log(publicPath);
 
-
+const {generateMessage} = require('./utils/message');
 
 var app = express();
 var server = http.createServer(app); // app.listen calls createServer as well
@@ -21,29 +21,32 @@ io.on('connection', (socket)=>{
     console.log('new user connected');
 
     // new user sees this
-    socket.emit('newMessage', {
-        from: 'admin',
-        text: 'welcome to the chat app from admin',
-        createdAt: new Date().getTime()  
-    });
+    // socket.emit('newMessage', {
+    //     from: 'admin',
+    //     text: 'welcome to the chat app from admin',
+    //     createdAt: new Date().getTime()  
+    // });
+    socket.emit('newMessage', generateMessage('Admin', 'welcome to the chat app from admin'));
 
-    // everyone else but new user above will see this
-    socket.broadcast.emit('newMessage', {
-        from: 'admin',
-        text: 'new user joined',
-        createdAt: new Date().getTime()  
-    });
+    // everyone else except new user above will see this
+    // socket.broadcast.emit('newMessage', {
+    //     from: 'admin',
+    //     text: 'new user joined',
+    //     createdAt: new Date().getTime()  
+    // });
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'new user joined'));
 
     // listen to client
     socket.on('createMessage', (newMessage)=>{
         console.log('received new message from client ', newMessage);
         // socket.emit emits event to single connection (like to user that just joined)
         // while io.emit emits event to every single connections
-        io.emit('newMessage', {
-            from: newMessage.from,
-            text: newMessage.text,
-            createdAt: new Date().getTime()  // to prevent spoofing
-        });  
+        // io.emit('newMessage', {
+        //     from: newMessage.from,
+        //     text: newMessage.text,
+        //     createdAt: new Date().getTime()  // to prevent spoofing
+        // });  
+        io.emit('newMessage', generateMessage(newMessage.from, newMessage.text));
 
         // socket being called will not get msg, everyone else will
         // socket.broadcast.emit('newMessage', {   // will send to everyone but the 'socket'
